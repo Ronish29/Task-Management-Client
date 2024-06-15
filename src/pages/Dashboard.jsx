@@ -44,6 +44,7 @@ const Dashboard = () => {
 
     const getTasks = async () => {
         try {
+            setIsLoading(true)
             const response = await axios.get(`${config.BASE_URL}/tasks/`, headerConfig);
             const tasks = response.data;
             setTaskData(tasks);
@@ -73,7 +74,7 @@ const Dashboard = () => {
         const data = new FormData(event.currentTarget);
         const title = data.get('taskTitle');
         const description = data.get('taskDescription');
-
+        setIsLoading(true);
         try {
             const response = await axios.post(
                 `${config.BASE_URL}/tasks/`,
@@ -83,28 +84,40 @@ const Dashboard = () => {
 
             if (response.data.success) {
                 toast.success("Task created successfully");
+                setIsLoading(false);
                 getTasks();
             }
         } catch (error) {
             console.error('Error creating task:', error);
+            setIsLoading(false);
         }
     };
 
     const handleEdit = async (taskId, updatedTask) => {
         try {
+            setIsLoading(true);
             await axios.put(`${config.BASE_URL}/tasks/${taskId}`, updatedTask, headerConfig);
+            toast.success("Task Edit successfull");
             getTasks();
+            setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             console.error('Error updating task:', error);
+            toast.error("Task Edit Not Successfull")
         }
     };
 
     const handleDelete = async (taskId) => {
         try {
+            setIsLoading(true);
             await axios.delete(`${config.BASE_URL}/tasks/${taskId}`, headerConfig);
+            toast.success("Task deleted successfully");
             getTasks();
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
             console.error('Error deleting task:', error);
+            toast.error("Task Not deleted");
         }
     };
 
